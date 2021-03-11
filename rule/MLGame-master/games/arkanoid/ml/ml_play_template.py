@@ -11,18 +11,76 @@ class MLPlay:
         self.preBall = [0, 1]
         self.deltaBall = [0, 0]
 
-    def coll(self, scene_info, X, Y):
-        for i in scene_info['bricks']:
-            if(X>=i[0] and X<=(i[0]+25) and Y>=i[1] and Y<=(i[1]+10)):
-                #print("X:{}, Y:{}, BX:{}, BY:{}".format(X, Y, i[0], i[1]))
-                return i[0]
+    # def coll(self, scene_info, X, Y):
+    #     for i in scene_info['bricks']:
+    #         if(X>=i[0] and X<=(i[0]+25) and Y>=i[1] and Y<=(i[1]+10)):
+    #             #print("X:{}, Y:{}, BX:{}, BY:{}".format(X, Y, i[0], i[1]))
+    #             return i[0]
 
-        for i in scene_info['hard_bricks']:
-            if(X>=i[0] and X<=(i[0]+25) and Y>=i[1] and Y<=(i[1]+10)):
-                return i[0]
-        return -999
-        
-        
+    #     for i in scene_info['hard_bricks']:
+    #         if(X>=i[0] and X<=(i[0]+25) and Y>=i[1] and Y<=(i[1]+10)):
+    #             return i[0]
+    #     return -999
+
+    def nextBall(self, X, Y, dire, speed, scene_info):
+        # dir : 0:右上, 1:右下, 2:左上, 3:左下    
+        tempX = X
+        tempY = Y
+        for i in range(0, speed):
+            if(dire == 0):
+                tempX = tempX + 1
+                tempY = tempY - 1
+            elif(dire == 1):
+                tempX = tempX + 1
+                tempY = tempY + 1
+            elif(dire == 2):
+                tempX = tempX - 1
+                tempY = tempY - 1
+            elif(dire == 3):
+                tempX = tempX - 1
+                tempY = tempY + 1
+
+            if(dire == 0):
+                if(tempY <= 0):
+                    return tempX, 0, 1
+                elif(tempX >= 200):
+                    return 200, tempY, 2
+            elif(dire == 1):
+                if(tempX >= 200):
+                    return 200, tempY, 3
+            elif(dire == 2):
+                if(tempY <= 0):
+                    return tempX, 0, 3
+                elif(tempX <= 0):
+                    return 0, tempY, 0
+            elif(dire == 3):
+                if(tempX <= 0):
+                    return 0, tempY, 1
+
+            for i in scene_info['bricks']:
+                if(tempX>=i[0] and tempX<=(i[0]+25) and tempY>=i[1] and tempY<=(i[1]+10)):
+                    if(dire == 0):
+                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]+10))):
+                            return tempX, i[1]+10, 1
+                        else:
+                            return i[0], tempY, 2
+                    elif(dire == 1):
+                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]))):
+                            return tempX, i[1], 0
+                        else:
+                            return i[0], tempY, 3
+                    elif(dire == 2):
+                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]+10))):
+                            return tempX, i[1]+10, 3
+                        else:
+                            return i[0] + 25, tempY, 0
+                    elif(dire == 3):
+                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]))):
+                            return tempX, i[1], 2
+                        else:
+                            return i[0] + 25, tempY, 1
+        return tempX, tempY, dire
+
 
     def update(self, scene_info):
         """
@@ -48,63 +106,27 @@ class MLPlay:
             # print(self.deltaBall)
             destinationX = scene_info['ball'][0]
             destinationY = scene_info['ball'][1]
-            ballY = scene_info['ball'][1]
-            block = 0
-            if(self.deltaBall[1] >= 0):
-                for i in range(0, 100):
-                    if((ballY + self.deltaBall[1] * i) >= 400):
-                        block = i
-                        break
-            
-            # print(self.deltaBall[0])
-            if(self.deltaBall[0]>=0):
-                # print("right")
-                flag = 1
-                for i in range(0, block+1):
-                    temp = destinationX + flag * self.deltaBall[0]
-                    destinationY = destinationY + self.deltaBall[1]
-                    if(temp > 200):
-                        destinationX = 200
-                        flag = flag * -1
-                        
-                    elif(temp < 0):
-                        destinationX = 0
-                        flag = flag * -1
 
-                    elif(self.coll(scene_info, temp, destinationY) != -999):
-                        destinationX = self.coll(scene_info, temp, destinationY)
-                        flag = flag * -1
-                        
-                    else:
-                        destinationX = temp
-            else:
-                # print("left")
-                flag = 1
-                for i in range(0, block+1):
-                    temp = destinationX + flag * self.deltaBall[0]
-                    destinationY = destinationY + self.deltaBall[1]
-                    if(temp > 200):
-                        destinationX = 200
-                        flag = flag * -1
-                        
-                    elif(temp < 0):
-                        destinationX = 0
-                        flag = flag * -1
+            speed = abs(self.deltaBall[0])
+            dire = 10
 
-                    elif(self.coll(scene_info, temp, destinationY) != -999):
-                        destinationX = self.coll(scene_info, temp, destinationY)
-                        flag = flag * -1
-                        
-                    else:
-                        destinationX = temp
+            if(self.deltaBall[0] > 0 and self.deltaBall[1] < 0):
+                dire = 0
+            elif(self.deltaBall[0] > 0 and self.deltaBall[1] > 0):
+                dire = 1
+            elif(self.deltaBall[0] < 0 and self.deltaBall[1] < 0):
+                dire = 2
+            elif(self.deltaBall[0] < 0 and self.deltaBall[1] > 0):
+                dire = 3
 
-            #if(self.coll(scene_info, scene_info['ball'][0] + self.deltaBall[0],  scene_info['ball'][1] + self.deltaBall[1]) != -999):
-                #print(self.coll(scene_info, scene_info['ball'][0] + self.deltaBall[0],  scene_info['ball'][0] + self.deltaBall[1]))
-                #print(scene_info['ball'])
-                
-                    
+            for i in range(1, 200):
+                destinationX, destinationY, dire = self.nextBall(destinationX, destinationY, dire, speed, scene_info)
+                if(destinationY >= 400):
+                    break
 
-            #print("pre:{}, ball:{}, block:{}".format(destinationX, scene_info['ball'][0], block))
+
+            print(destinationX)
+
             if(abs((scene_info['platform'][0] + 20) - destinationX) < random.randint(9, 11)):
                 command = "NONE"
             elif(scene_info['platform'][0]+20 > destinationX):
@@ -112,13 +134,6 @@ class MLPlay:
             else:
                 command = "MOVE_RIGHT"
 
-            if(self.deltaBall[1] < 0):
-                if(abs((scene_info['platform'][0] + 20) - scene_info['ball'][0]) < random.randint(9, 11)):
-                    command = "NONE"
-                elif(scene_info['platform'][0]+20 > scene_info['ball'][0]):
-                    command = "MOVE_LEFT"
-                else:
-                    command = "MOVE_RIGHT"
                     
 
 

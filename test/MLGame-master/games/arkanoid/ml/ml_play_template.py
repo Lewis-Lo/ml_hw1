@@ -45,7 +45,7 @@ class MLPlay:
                 command = "SERVE_TO_RIGHT"
         else:
             command = "MOVE_RIGHT"
-            model = pickle.load(open('dtc3.pickle', 'rb'))
+            model = pickle.load(open('dic2.pickle', 'rb'))
 
             self.deltaBall[0] = scene_info['ball'][0] - self.preBall[0]
             self.preBall[0] = scene_info['ball'][0]
@@ -73,7 +73,7 @@ class MLPlay:
                 #左下
                Direction = 3
 
-            test = np.zeros((1, 6))
+            test = np.zeros((1, 5))
             #test[0, 0] = BallX
             #test[0, 1] = BallY
             test[0, 0] = ReX
@@ -81,7 +81,7 @@ class MLPlay:
             test[0, 2] = dirX
             test[0, 3] = dirY
             test[0, 4] = Direction
-            test[0, 5] = scene_info['platform'][0]
+            #test[0, 5] = scene_info['platform'][0]
 
             res = model.predict(test)
             if(res == 0):
