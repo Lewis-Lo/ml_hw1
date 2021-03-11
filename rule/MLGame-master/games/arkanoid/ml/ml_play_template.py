@@ -44,10 +44,10 @@ class MLPlay:
                 if(tempY <= 0):
                     return tempX, 0, 1
                 elif(tempX >= 200):
-                    return 200, tempY, 2
+                    return 195, tempY, 2
             elif(dire == 1):
                 if(tempX >= 200):
-                    return 200, tempY, 3
+                    return 195, tempY, 3
             elif(dire == 2):
                 if(tempY <= 0):
                     return tempX, 0, 3
@@ -60,23 +60,23 @@ class MLPlay:
             for i in scene_info['bricks']:
                 if(tempX>=i[0] and tempX<=(i[0]+25) and tempY>=i[1] and tempY<=(i[1]+10)):
                     if(dire == 0):
-                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]+10))):
+                        if(abs(tempX - (i[0] + 25)) >= abs(tempY - (i[1]+10))):
                             return tempX, i[1]+10, 1
                         else:
-                            return i[0], tempY, 2
+                            return i[0]-5, tempY, 2
                     elif(dire == 1):
-                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]))):
-                            return tempX, i[1], 0
+                        if(abs(tempX - (i[0] + 25)) >= abs(tempY - (i[1]))):
+                            return tempX, i[1]-5, 0
                         else:
-                            return i[0], tempY, 3
+                            return i[0]-5, tempY, 3
                     elif(dire == 2):
-                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]+10))):
+                        if(abs(tempX - (i[0] + 25)) >= abs(tempY - (i[1]+10))):
                             return tempX, i[1]+10, 3
                         else:
                             return i[0] + 25, tempY, 0
                     elif(dire == 3):
-                        if((tempX - (i[0] + 25)) >= (tempY - (i[1]))):
-                            return tempX, i[1], 2
+                        if(abs(tempX - (i[0] + 25)) >= abs(tempY - (i[1]))):
+                            return tempX, i[1]-5, 2
                         else:
                             return i[0] + 25, tempY, 1
         return tempX, tempY, dire
@@ -125,7 +125,7 @@ class MLPlay:
                     break
 
 
-            print(destinationX)
+            print(destinationX, scene_info['ball'][0])
 
             if(abs((scene_info['platform'][0] + 20) - destinationX) < random.randint(9, 11)):
                 command = "NONE"

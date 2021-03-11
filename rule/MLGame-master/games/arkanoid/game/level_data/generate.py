@@ -19,21 +19,21 @@ if __name__ == '__main__':
         offset = '25 50 -1'
         file.write(offset)
 
-        numOfBricks = random.randint(5, 30)
+        numOfBricks = random.randint(10, 60)
         bricksX = []
         bricksY = []
         for i in range(0, numOfBricks):
             pos = [0, 0]
             pos[0] = random.randint(0, 6)
-            pos[1] = random.randint(0, 4)
+            pos[1] = random.randint(0, 15)
             pos[0] = pos[0] * 25
-            pos[1] = pos[1] * 25
+            pos[1] = pos[1] * 10
 
             if(check(pos[0], pos[1], bricksX, bricksY) == False):
                 file.write('\n')
                 bricksX.append(pos[0])
                 bricksY.append(pos[1])
-                file.write("{} {} 0".format(str(pos[0]), str(pos[1])))
+                file.write("{} {} {}".format(str(pos[0]), str(pos[1]), str(random.randint(0, 1))))
             
 
 
