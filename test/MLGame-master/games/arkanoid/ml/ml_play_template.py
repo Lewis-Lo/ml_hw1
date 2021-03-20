@@ -6,6 +6,7 @@ import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
+import os
 class MLPlay:
     def __init__(self):
         """
@@ -14,19 +15,13 @@ class MLPlay:
         self.ball_served = False
         self.preBall = [0, 1]
         self.deltaBall = [0, 0]
-
-    def coll(self, scene_info, X, Y):
-        for i in scene_info['bricks']:
-            if(X>=i[0] and X<=(i[0]+25) and Y>=i[1] and Y<=(i[1]+10)):
-                #print("X:{}, Y:{}, BX:{}, BY:{}".format(X, Y, i[0], i[1]))
-                return i[0]
-
-        for i in scene_info['hard_bricks']:
-            if(X>=i[0] and X<=(i[0]+25) and Y>=i[1] and Y<=(i[1]+10)):
-                return i[0]
-        return -999
-        
-        
+        self.num_bricks = 0
+        self.num_hard_bricks = 0
+        self.spos = 0
+        with open(os.path.join(os.path.dirname(__file__), 'modelo_8.pickle'), 'rb') as f:
+            self.model = pickle.load(f)
+        with open(os.path.join(os.path.dirname(__file__), 'model_s4.pickle'), 'rb') as f:
+            self.model_s4 = pickle.load(f)    
 
     def update(self, scene_info):
         """
@@ -38,14 +33,37 @@ class MLPlay:
             return "RESET"
 
         if not self.ball_served:
-            self.ball_served = True
-            if(random.randint(0, 1) == 0):
-                command = "SERVE_TO_LEFT"
+
+            if(scene_info['platform'][0] < self.spos):
+                command = "MOVE_RIGHT"
+                print(scene_info['platform'][0])
             else:
-                command = "SERVE_TO_RIGHT"
+                command = "SERVE_TO_LEFT"
+                self.ball_served = True
+
+
+            #### s4 ####
+            if(scene_info['frame'] == 0):
+                self.num_bricks = 0
+                self.num_hard_bricks = 0
+                for i in scene_info['bricks']:
+                    self.num_bricks = self.num_bricks + 1
+                for i in scene_info['hard_bricks']:
+                    self.num_hard_bricks = self.num_hard_bricks + 1
+            if(self.num_bricks == 96):
+                self.ball_served = True
+            command = "SERVE_TO_LEFT"
+            if(scene_info['platform'][0] < 20):
+                command = "MOVE_RIGHT"
+                self.ball_served = False
+            #### s4 ####
+
+            
+
+
         else:
             command = "MOVE_RIGHT"
-            model = pickle.load(open('dic2.pickle', 'rb'))
+            # model = pickle.load(open('modelo_2.pickle', 'rb'))
 
             self.deltaBall[0] = scene_info['ball'][0] - self.preBall[0]
             self.preBall[0] = scene_info['ball'][0]
@@ -73,17 +91,36 @@ class MLPlay:
                 #左下
                Direction = 3
 
-            test = np.zeros((1, 5))
-            #test[0, 0] = BallX
-            #test[0, 1] = BallY
-            test[0, 0] = ReX
-            test[0, 1] = ReY
-            test[0, 2] = dirX
-            test[0, 3] = dirY
-            test[0, 4] = Direction
-            #test[0, 5] = scene_info['platform'][0]
+            # if(scene_info['frame'] == 1):
+            #     self.num_bricks = 0
+            #     self.num_hard_bricks = 0
+            #     for i in scene_info['bricks']:
+            #         self.num_bricks = self.num_bricks + 1
+            #     for i in scene_info['hard_bricks']:
+            #         self.num_hard_bricks = self.num_hard_bricks + 1
 
-            res = model.predict(test)
+
+            # print(self.num_bricks, self.num_hard_bricks)
+
+            test = np.zeros((1, 10))
+            test[0, 0] = BallX
+            test[0, 1] = BallY
+            test[0, 2] = ReX
+            test[0, 3] = ReY
+            test[0, 4] = dirX
+            test[0, 5] = dirY
+            test[0, 6] = Direction
+            test[0, 7] = scene_info['platform'][0]
+            test[0, 8] = self.num_bricks
+            test[0, 9] = self.num_hard_bricks
+
+            d = test[0, [0, 1, 2, 3, 4, 5, 6, 7]].reshape(1, -1)
+
+            if(self.num_bricks == 96):
+                res = self.model_s4.predict(d)
+            else:
+                res = self.model.predict(d)
+
             if(res == 0):
                 command = 'NONE'
             elif(res == 1):
