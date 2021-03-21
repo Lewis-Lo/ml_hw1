@@ -81,7 +81,6 @@ for files in obj:
     BallY = BallY[:-1]
     ReX = ReX[:-1]
     ReY = ReY[:-1]
-    Frame = Frame[:-1]
 
     num_bricks = 0
     num_hard_bricks = 0
@@ -104,7 +103,7 @@ for files in obj:
     # game result
     print(log['ml']['scene_info'][len(log['ml']['scene_info']) - 1]['status'])
 
-    data = np.array([BallX, BallY, ReX, ReY, dirX, dirY, Direction, PlatformX, bricks, Frame, Command])
+    data = np.array([BallX, BallY, ReX, ReY, dirX, dirY, Direction, PlatformX, bricks, hard_bricks, Command])
     print(data)
     pickle.dump(data, open('u{}.pickle'.format(str(index)), 'wb'))
     index = index + 1
@@ -184,17 +183,17 @@ files = ['', '', '', '', '', '', '', '', '', '',
          '', '', '', '', '', '', '', '', '', '', 
          '', '', '', '', '', '', '', '', '', '']
 
-for index in range(0, 14):
+for index in range(0, 3):
     files[index] = ("u{}.pickle".format(str(index+1)))
 
 data = pickle.load(open(files[0], 'rb'))
 
-for index in files[0:14]:
+for index in files[0:2]:
     temp = pickle.load(open(index, 'rb'))
     data = np.hstack((data, temp))
 
 data = data.T
-dataX = data[:, [0, 1, 6, 7, 9]]
+dataX = data[:, [0, 1, 2, 3, 4, 5, 6, 7]]
 dataY = data[:, 10]
 
 print(dataX)

@@ -115,9 +115,12 @@ class MLPlay:
             test[0, 9] = self.num_hard_bricks
 
             d = test[0, [0, 1, 2, 3, 4, 5, 6, 7]].reshape(1, -1)
+            d_s4 = test[0, [0, 1, 6, 7, 9]]
+            d_s4[4] = scene_info['frame']
+            d_s4 = d_s4.reshape(1, -1)
 
             if(self.num_bricks == 96):
-                res = self.model_s4.predict(d)
+                res = self.model_s4.predict(d_s4)
             else:
                 res = self.model.predict(d)
 
