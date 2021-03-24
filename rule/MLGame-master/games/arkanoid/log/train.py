@@ -14,7 +14,7 @@ allList = os.listdir()
 reList = []
 
 for name in allList:
-    if('ml_EASY'in name):
+    if('ml_EASY_5'in name):
         reList.append(name)
     
 print(reList) 
@@ -208,12 +208,10 @@ print(knn.predict(X_test))
 print(Y_test)
 print(knn.score(X_test, Y_test))
 
-pickle.dump(knn, open('model_s4.pickle', 'wb'))
+pickle.dump(knn, open('model_s5.pickle', 'wb'))
 
 dtc = tree = DecisionTreeClassifier(criterion = 'entropy', max_depth=40, random_state=3)
 dtc.fit(X_train, Y_train)
 print(dtc.score(X_test, Y_test))
-pickle.dump(dtc, open('dtc_s4.pickle', 'wb'))
-
-
+pickle.dump(dtc, open('dtc_s5.pickle', 'wb'))
 

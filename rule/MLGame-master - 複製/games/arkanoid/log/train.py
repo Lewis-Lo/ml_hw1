@@ -81,12 +81,12 @@ files = ['', '', '', '', '', '', '', '', '', '',
          '', '', '', '', '', '', '', '', '', '', 
          '', '', '', '', '', '', '', '', '', '']
 
-for index in range(0, 30):
+for index in range(0, 40):
     files[index] = ("u{}.pickle".format(str(index+1)))
 
 data = pickle.load(open(files[0], 'rb'))
 
-for index in files[0:30]:
+for index in files[0:40]:
     temp = pickle.load(open(index, 'rb'))
     data = np.hstack((data, temp))
 
@@ -105,7 +105,7 @@ print(knn.predict(X_test))
 print(Y_test)
 print(knn.score(X_test, Y_test))
 
-pickle.dump(knn, open('modelo_8.pickle', 'wb'))
+pickle.dump(knn, open('modelo_f.pickle', 'wb'))
 
 # svc = svm.SVC(C=5)
 # svc.fit(X_train, Y_train)
@@ -114,7 +114,7 @@ pickle.dump(knn, open('modelo_8.pickle', 'wb'))
 dtc = tree = DecisionTreeClassifier(criterion = 'entropy', max_depth=40, random_state=3)
 dtc.fit(X_train, Y_train)
 print(dtc.score(X_test, Y_test))
-pickle.dump(dtc, open('dtcn7.pickle', 'wb'))
+pickle.dump(dtc, open('dtcnf.pickle', 'wb'))
 
 # forest = ensemble.RandomForestClassifier(n_estimators = 100)
 # forest_fit = forest.fit(X_train, Y_train)

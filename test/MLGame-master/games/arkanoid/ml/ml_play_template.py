@@ -18,10 +18,12 @@ class MLPlay:
         self.num_bricks = 0
         self.num_hard_bricks = 0
         self.spos = 0
-        with open(os.path.join(os.path.dirname(__file__), 'modelo_8.pickle'), 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'modelo_f.pickle'), 'rb') as f:
             self.model = pickle.load(f)
         with open(os.path.join(os.path.dirname(__file__), 'model_s4.pickle'), 'rb') as f:
-            self.model_s4 = pickle.load(f)    
+            self.model_s4 = pickle.load(f)
+        with open(os.path.join(os.path.dirname(__file__), 'model_s5.pickle'), 'rb') as f:
+            self.model_s5 = pickle.load(f)        
 
     def update(self, scene_info):
         """
@@ -57,6 +59,14 @@ class MLPlay:
                 command = "MOVE_RIGHT"
                 self.ball_served = False
             #### s4 ####
+            #### s5 ####
+            if(self.num_bricks == 8 and self.num_hard_bricks == 32):
+                self.ball_served = True
+            command = "SERVE_TO_LEFT"
+            if(scene_info['platform'][0] < 20):
+                command = "MOVE_RIGHT"
+                self.ball_served = False
+            #### s5 ####
 
             
 
@@ -121,6 +131,8 @@ class MLPlay:
 
             if(self.num_bricks == 96):
                 res = self.model_s4.predict(d_s4)
+            elif(self.num_bricks == 8 and self.num_hard_bricks == 32):
+                res = self.model_s5.predict(d_s4)
             else:
                 res = self.model.predict(d)
 
